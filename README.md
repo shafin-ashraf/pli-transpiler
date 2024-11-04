@@ -1,38 +1,37 @@
 ## Overview
-Basic POC to transpile `PL/I` code to `Javascript`
+Basic POC to transpile `PL/I` code to `C#`
 
 ## How to run
-`go run ./... test-pli-codes/test_3.pli > test.js`
+`go run ./... test-pli-codes/test_3.pli > test.cs`
 
 ## Input Pl/I
 ```
 MAIN: PROCEDURE;
-    DECLARE x FIXED = 5;
-    DECLARE y FIXED = 10;
-    DECLARE result FIXED;
+	DECLARE i FIXED;
+	DECLARE sum FIXED = 0;
 
-    result = x + y;
-END;
+	DO i = 1 TO 10;
+		sum = sum + i;
+	END;
 
-HELPER: PROCEDURE;
-    DECLARE temp FIXED = 100;
-    DECLARE factor FIXED = 2;
-    temp = temp * factor;
-END;
+END MAIN;
 ```
-## Output javascript
-```javascript
-(function() {
-function MAIN() {
-  let x = 5;
-  let y = 10;
-  let result;
-  result = x + y;
+## Output C#
+```cs
+using System;
+
+namespace PLIProgram
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            int i;
+            int sum = 0;
+            for (int i = 1; i <= 10; i += 1) {
+                sum = sum + i;
+            }
+        }
+    }
 }
-function HELPER() {
-  let temp = 100;
-  let factor = 2;
-  temp = temp * factor;
-}
-})();
 ```
