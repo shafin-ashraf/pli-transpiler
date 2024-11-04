@@ -1,0 +1,9 @@
+MAIN: PROCEDURE;
+	DECLARE i FIXED;
+	DECLARE sum FIXED = 0;
+
+	DO i = 1 TO 10;
+		sum = sum + i;
+	END;
+
+END MAIN;

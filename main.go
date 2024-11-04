@@ -18,6 +18,7 @@ func main() {
 		fmt.Printf("Error opening file: %v\n", err)
 		os.Exit(1)
 	}
+
 	defer func(inputFile *os.File) {
 		err := inputFile.Close()
 		if err != nil {
@@ -38,7 +39,7 @@ func main() {
 	parser := NewParser(tokens)
 	program := parser.Parse()
 
-	javascript := program.ToJS()
+	csharp := program.ToCS(0)
 
-	fmt.Println(javascript)
+	fmt.Println(csharp)
 }
