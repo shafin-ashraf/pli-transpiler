@@ -113,6 +113,14 @@ func (l *Lexer) tokenizeIdentifier() {
 		tokenType = "FLOAT"
 	case "CHARACTER", "CHAR":
 		tokenType = "CHARACTER"
+	case "DO":
+		tokenType = "DO"
+	case "WHILE":
+		tokenType = "WHILE"
+	case "TO":
+		tokenType = "TO"
+	case "BY":
+		tokenType = "BY"
 	}
 
 	l.tokens = append(l.tokens, Token{Type: tokenType, Value: identifier})

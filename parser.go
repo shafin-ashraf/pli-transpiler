@@ -22,6 +22,14 @@ type Assignment struct {
 	Right string
 }
 
+type DoLoop struct {
+	Variable string
+	Start    string
+	End      string
+	Step     string
+	Body     []Node
+}
+
 type Parser struct {
 	tokens []Token
 	pos    int
@@ -127,8 +135,9 @@ func (p *Parser) parseStatement() Node {
 		return p.parseDeclaration()
 	case "IDENTIFIER":
 		return p.parseAssignment()
+	case "DO":
+		return p.parseDoLoop()
 	default:
-		// skipping unknown
 		p.advance()
 		return nil
 	}
@@ -167,6 +176,49 @@ func (p *Parser) parseDeclaration() Node {
 	return decl
 }
 
+func (p *Parser) parseDoLoop() Node {
+	doLoop := DoLoop{
+		Body: make([]Node, 0),
+	}
+
+	// skipping "DO"
+	p.advance()
+
+	if p.current().Type == "IDENTIFIER" {
+		doLoop.Variable = p.current().Value
+		p.advance()
+	}
+
+	// parsing start, end, and step
+	if p.current().Type == "EQUALS" {
+		p.advance()
+		doLoop.Start = p.parseExpression()
+
+		if p.current().Type == "TO" {
+			p.advance()
+			doLoop.End = p.parseExpression()
+		}
+		if p.current().Type == "BY" {
+			p.advance()
+			doLoop.Step = p.parseExpression()
+		}
+	}
+
+	for p.current().Type != "END" && p.current().Type != "EOF" {
+		doLoop.Body = append(doLoop.Body, p.parseStatement())
+	}
+
+	// skipping "END" and semicolon
+	if p.current().Type == "END" {
+		p.advance()
+	}
+	if p.current().Type == "SEMICOLON" {
+		p.advance()
+	}
+
+	return doLoop
+}
+
 func (p *Parser) parseAssignment() Node {
 	assign := Assignment{
 		Left: p.current().Value,
@@ -190,7 +242,7 @@ func (p *Parser) parseExpression() string {
 	var expr strings.Builder
 
 	// captuing everything until semicolon
-	for p.current().Type != "SEMICOLON" && p.current().Type != "EOF" {
+	for p.current().Type != "SEMICOLON" && p.current().Type != "EOF" && p.current().Type != "TO" && p.current().Type != "BY" {
 		expr.WriteString(p.current().Value)
 		if p.peek().Type != "SEMICOLON" {
 			expr.WriteString(" ")
