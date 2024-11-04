@@ -1,0 +1,7 @@
+SAMPLE: PROCEDURE;
+  DECLARE x FIXED;
+  DECLARE y FIXED = 10;
+  DECLARE result FIXED;
+  x = 5;
+  result = x + y;
+END;

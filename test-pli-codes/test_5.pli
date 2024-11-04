@@ -1,0 +1,10 @@
+SCIENTIFIC: PROCEDURE;
+    DECLARE pi FLOAT = 3.14159;
+    DECLARE radius FLOAT = 5.0;
+    DECLARE area FLOAT;
+    DECLARE circumference FLOAT;
+
+    area = pi * radius * radius;
+    circumference = 2 * pi * radius;
+END;
+

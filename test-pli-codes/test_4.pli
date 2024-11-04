@@ -1,0 +1,8 @@
+STRING_DEMO: PROCEDURE;
+    DECLARE name CHARACTER;
+    DECLARE greeting CHARACTER;
+    DECLARE title CHARACTER = "Mr";
+
+    name = "John Smith";
+    greeting = "Hello";
+END;

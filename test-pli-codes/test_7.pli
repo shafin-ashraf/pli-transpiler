@@ -1,0 +1,11 @@
+ASSIGNMENTS: PROCEDURE;
+    DECLARE a FIXED = 1;
+    DECLARE b FIXED = 2;
+    DECLARE c FIXED = 3;
+    DECLARE temp FIXED;
+
+    temp = a;
+    a = b;
+    b = c;
+    c = temp;
+END;

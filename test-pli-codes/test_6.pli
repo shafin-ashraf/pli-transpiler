@@ -1,0 +1,8 @@
+MIXED_TYPES: PROCEDURE;
+    DECLARE count FIXED = 10;
+    DECLARE price FLOAT = 19.99;
+    DECLARE total FLOAT;
+    DECLARE description CHARACTER = "Total Price:";
+
+    total = count * price;
+END;

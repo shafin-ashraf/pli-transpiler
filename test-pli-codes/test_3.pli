@@ -1,0 +1,13 @@
+MAIN: PROCEDURE;
+    DECLARE x FIXED = 5;
+    DECLARE y FIXED = 10;
+    DECLARE result FIXED;
+
+    result = x + y;
+END;
+
+HELPER: PROCEDURE;
+    DECLARE temp FIXED = 100;
+    DECLARE factor FIXED = 2;
+    temp = temp * factor;
+END;

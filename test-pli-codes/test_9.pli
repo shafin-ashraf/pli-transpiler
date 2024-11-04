@@ -1,0 +1,10 @@
+FINANCE: PROCEDURE;
+    DECLARE principal FIXED = 1000;
+    DECLARE rate FLOAT = 0.05;
+    DECLARE time FIXED = 2;
+    DECLARE interest FLOAT;
+    DECLARE total FLOAT;
+
+    interest = principal * rate * time;
+    total = principal + interest;
+END;

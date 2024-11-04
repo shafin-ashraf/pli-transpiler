@@ -1,0 +1,10 @@
+EXPRESSIONS: PROCEDURE;
+    DECLARE x FIXED = 10;
+    DECLARE y FIXED = 5;
+    DECLARE z FIXED = 2;
+    DECLARE result FIXED;
+
+    result = x + y * z;
+    result = x * y + z;
+    result = (x + y) * z;
+END;

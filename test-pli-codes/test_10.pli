@@ -1,0 +1,8 @@
+PROCESSING: PROCEDURE;
+    DECLARE raw_value FIXED = 100;
+    DECLARE scaling_factor FLOAT = 0.01;
+    DECLARE offset FIXED = 5;
+    DECLARE processed_value FLOAT;
+
+    processed_value = raw_value * scaling_factor + offset;
+END;
