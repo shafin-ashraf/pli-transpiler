@@ -1,9 +1,47 @@
-MAIN: PROCEDURE;
-	DECLARE i FIXED;
-	DECLARE sum FIXED = 0;
+MATHUTILS: PROCEDURE;
+   DECLARE NUM FIXED;
+   DECLARE RESULT FIXED;
 
-	DO i = 1 TO 10;
-		sum = sum + i;
-	END;
+   NUM = 15;
 
-END MAIN;
+   IF NUM > 10 THEN
+      CALL CALCULATE_SQUARE;
+   ELSE
+      CALL CALCULATE_CUBE;
+   END;
+
+   CALL PRINT_SERIES;
+END;
+
+CALCULATE_SQUARE: PROCEDURE;
+   DECLARE TEMP FIXED;
+   TEMP = NUM * NUM;
+   RESULT = TEMP;
+END;
+
+CALCULATE_CUBE: PROCEDURE;
+   DECLARE TEMP FIXED;
+   TEMP = NUM * NUM * NUM;
+   RESULT = TEMP;
+END;
+
+PRINT_SERIES: PROCEDURE;
+   DECLARE I FIXED;
+   DECLARE SUM FIXED;
+
+   SUM = 0;
+
+   DO I = 1 TO RESULT BY 2;
+      IF I < 10 THEN
+         SUM = SUM + I;
+      ELSE
+         IF I < 20 THEN
+            SUM = SUM + I * 2;
+         ELSE
+            SUM = SUM + I * 3;
+         END;
+      END;
+   END;
+
+   RESULT = SUM;
+END;

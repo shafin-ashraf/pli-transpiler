@@ -79,6 +79,33 @@ func (l *Lexer) Tokenize() []Token {
 			l.tokens = append(l.tokens, Token{Type: "RPAREN", Value: ")"})
 			l.advance()
 		default:
+		case l.current() == '>':
+			if l.pos+1 < len(l.input) && l.input[l.pos+1] == '=' {
+				l.tokens = append(l.tokens, Token{Type: "OPERATOR", Value: ">="})
+				l.advance()
+				l.advance()
+			} else {
+				l.tokens = append(l.tokens, Token{Type: "OPERATOR", Value: ">"})
+				l.advance()
+			}
+		case l.current() == '<':
+			if l.pos+1 < len(l.input) && l.input[l.pos+1] == '=' {
+				l.tokens = append(l.tokens, Token{Type: "OPERATOR", Value: "<="})
+				l.advance()
+				l.advance()
+			} else {
+				l.tokens = append(l.tokens, Token{Type: "OPERATOR", Value: "<"})
+				l.advance()
+			}
+		case l.current() == '¬':
+			if l.pos+1 < len(l.input) && l.input[l.pos+1] == '=' {
+				l.tokens = append(l.tokens, Token{Type: "OPERATOR", Value: "!="})
+				l.advance()
+				l.advance()
+			} else {
+				l.tokens = append(l.tokens, Token{Type: "OPERATOR", Value: "!"})
+				l.advance()
+			}
 			// skipping unknown
 			l.advance()
 		}
@@ -121,6 +148,12 @@ func (l *Lexer) tokenizeIdentifier() {
 		tokenType = "TO"
 	case "BY":
 		tokenType = "BY"
+	case "IF":
+		tokenType = "IF"
+	case "THEN":
+		tokenType = "THEN"
+	case "ELSE":
+		tokenType = "ELSE"
 	}
 
 	l.tokens = append(l.tokens, Token{Type: tokenType, Value: identifier})

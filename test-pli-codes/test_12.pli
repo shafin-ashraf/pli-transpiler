@@ -1,0 +1,9 @@
+EXAMPLE: PROCEDURE;
+   DECLARE X FIXED;
+   X = 10;
+   IF X > 5 THEN
+      X = X + 1;
+   ELSE
+      X = X - 1;
+   END;
+END;

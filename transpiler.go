@@ -114,3 +114,40 @@ func (d DoLoop) ToCS(padding int) string {
 	cs.WriteString(indent + "}")
 	return cs.String()
 }
+
+func (i IfStatement) ToCS(padding int) string {
+	var cs strings.Builder
+	indent := strings.Repeat("    ", padding)
+
+	condition := i.Condition
+	condition = strings.ReplaceAll(condition, "¬=", "!=")
+	condition = strings.ReplaceAll(condition, "¬", "!")
+	condition = strings.ReplaceAll(condition, "^=", "!=")
+	condition = strings.ReplaceAll(condition, "^", "!")
+
+	cs.WriteString(fmt.Sprintf("%sif (%s)\n", indent, condition))
+	cs.WriteString(indent + "{\n")
+
+	for _, stmt := range i.ThenBody {
+		if stmt != nil {
+			cs.WriteString(stmt.ToCS(padding+1) + "\n")
+		}
+	}
+
+	cs.WriteString(indent + "}")
+
+	if i.HasElseClause {
+		cs.WriteString("\n" + indent + "else\n")
+		cs.WriteString(indent + "{\n")
+
+		for _, stmt := range i.ElseBody {
+			if stmt != nil {
+				cs.WriteString(stmt.ToCS(padding+1) + "\n")
+			}
+		}
+
+		cs.WriteString(indent + "}")
+	}
+
+	return cs.String()
+}

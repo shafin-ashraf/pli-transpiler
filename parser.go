@@ -30,6 +30,13 @@ type DoLoop struct {
 	Body     []Node
 }
 
+type IfStatement struct {
+	Condition     string
+	ThenBody      []Node
+	ElseBody      []Node
+	HasElseClause bool
+}
+
 type Parser struct {
 	tokens []Token
 	pos    int
@@ -137,6 +144,8 @@ func (p *Parser) parseStatement() Node {
 		return p.parseAssignment()
 	case "DO":
 		return p.parseDoLoop()
+	case "IF":
+		return p.parseIfStatement()
 	default:
 		p.advance()
 		return nil
@@ -176,12 +185,82 @@ func (p *Parser) parseDeclaration() Node {
 	return decl
 }
 
+func (p *Parser) parseIfStatement() Node {
+	ifStmt := IfStatement{
+		ThenBody: make([]Node, 0),
+		ElseBody: make([]Node, 0),
+	}
+
+	// skipping IF
+	p.advance()
+
+	// parsing condition insifde if  until THEN
+	var condition strings.Builder
+	for p.current().Type != "THEN" && p.current().Type != "EOF" {
+		if p.current().Type == "OPERATOR" {
+			if condition.Len() > 0 && !strings.HasSuffix(condition.String(), " ") {
+				condition.WriteString(" ")
+			}
+			condition.WriteString(p.current().Value)
+			if p.peek().Type != "THEN" {
+				condition.WriteString(" ")
+			}
+		} else {
+			condition.WriteString(p.current().Value)
+			if p.peek().Type != "OPERATOR" && p.peek().Type != "THEN" {
+				condition.WriteString(" ")
+			}
+		}
+		p.advance()
+	}
+	ifStmt.Condition = strings.TrimSpace(condition.String())
+
+	// skipping THEN
+	if p.current().Type == "THEN" {
+		p.advance()
+	}
+
+	// parsing THEN body until ELSE or END
+	for p.current().Type != "EOF" && p.current().Type != "END" && p.current().Type != "ELSE" {
+		stmt := p.parseStatement()
+		if stmt != nil {
+			ifStmt.ThenBody = append(ifStmt.ThenBody, stmt)
+		}
+	}
+
+	//checking for ELSE
+	if p.current().Type == "ELSE" {
+		ifStmt.HasElseClause = true
+		p.advance()
+
+		// parsing ELSE body until END
+		for p.current().Type != "EOF" && p.current().Type != "END" {
+			stmt := p.parseStatement()
+			if stmt != nil {
+				ifStmt.ElseBody = append(ifStmt.ElseBody, stmt)
+			}
+		}
+	}
+
+	// skipping END
+	if p.current().Type == "END" {
+		p.advance()
+	}
+
+	// skipping semicolon
+	if p.current().Type == "SEMICOLON" {
+		p.advance()
+	}
+
+	return ifStmt
+}
+
 func (p *Parser) parseDoLoop() Node {
 	doLoop := DoLoop{
 		Body: make([]Node, 0),
 	}
 
-	// skipping "DO"
+	// skipping DO
 	p.advance()
 
 	if p.current().Type == "IDENTIFIER" {
