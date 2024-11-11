@@ -11,6 +11,10 @@ type Procedure struct {
 	Statements []Node
 }
 
+type CallStatement struct {
+	ProcedureName string
+}
+
 type Declaration struct {
 	Name    string
 	Type    string
@@ -74,14 +78,52 @@ func (p *Parser) Parse() Program {
 		Procedures: make([]Procedure, 0),
 	}
 
+	mainProc := Procedure{
+		Name:       "MAIN",
+		Statements: make([]Node, 0),
+	}
+	hasMainProc := false
+
+	insideProcedure := false
+	var currentProc Procedure
+
 	for p.current().Type != "EOF" {
 		if p.current().Type == "IDENTIFIER" && p.peek().Type == "COLON" {
-			program.Procedures = append(program.Procedures, p.parseProcedure())
+			if insideProcedure {
+				program.Procedures = append(program.Procedures, currentProc)
+			}
+			currentProc = p.parseProcedure()
+			if currentProc.Name == "MAIN" {
+				hasMainProc = true
+			}
+			insideProcedure = true
 		} else if p.current().Type == "PROCEDURE" {
-			program.Procedures = append(program.Procedures, p.parseProcedure())
+			if insideProcedure {
+				program.Procedures = append(program.Procedures, currentProc)
+			}
+			currentProc = p.parseProcedure()
+			if currentProc.Name == "MAIN" {
+				hasMainProc = true
+			}
+			insideProcedure = true
 		} else {
-			p.advance()
+			stmt := p.parseStatement()
+			if stmt != nil {
+				if !insideProcedure {
+					mainProc.Statements = append(mainProc.Statements, stmt)
+				} else {
+					currentProc.Statements = append(currentProc.Statements, stmt)
+				}
+			}
 		}
+	}
+
+	if insideProcedure {
+		program.Procedures = append(program.Procedures, currentProc)
+	}
+
+	if len(mainProc.Statements) > 0 && !hasMainProc {
+		program.Procedures = append([]Procedure{mainProc}, program.Procedures...)
 	}
 
 	return program
@@ -146,10 +188,31 @@ func (p *Parser) parseStatement() Node {
 		return p.parseDoLoop()
 	case "IF":
 		return p.parseIfStatement()
+	case "CALL":
+		return p.parseCallStatement()
 	default:
 		p.advance()
 		return nil
 	}
+}
+
+func (p *Parser) parseCallStatement() Node {
+	// skipping CALL keyword
+	p.advance()
+
+	call := CallStatement{
+		ProcedureName: p.current().Value,
+	}
+
+	// skipping procedure name
+	p.advance()
+
+	// skipping semicolon if present
+	if p.current().Type == "SEMICOLON" {
+		p.advance()
+	}
+
+	return call
 }
 
 func (p *Parser) parseDeclaration() Node {

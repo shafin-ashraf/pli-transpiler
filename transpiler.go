@@ -151,3 +151,8 @@ func (i IfStatement) ToCS(padding int) string {
 
 	return cs.String()
 }
+
+func (c CallStatement) ToCS(padding int) string {
+	indent := strings.Repeat("    ", padding)
+	return fmt.Sprintf("%s%s();", indent, c.ProcedureName)
+}

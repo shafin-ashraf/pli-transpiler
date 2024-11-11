@@ -38,12 +38,31 @@ func (l *Lexer) skipWhitespace() {
 	}
 }
 
+func (l *Lexer) skipComment() {
+	if l.pos+1 < len(l.input) && l.input[l.pos:l.pos+2] == "/*" {
+		l.pos += 2
+		for l.pos+1 < len(l.input) {
+			if l.input[l.pos:l.pos+2] == "*/" {
+				l.pos += 2
+				return
+			}
+			l.pos++
+		}
+	}
+}
+
 func (l *Lexer) Tokenize() []Token {
 	for l.pos < len(l.input) {
 		l.skipWhitespace()
 
 		if l.pos >= len(l.input) {
 			break
+		}
+
+		// cheking for comments
+		if l.pos+1 < len(l.input) && l.input[l.pos:l.pos+2] == "/*" {
+			l.skipComment()
+			continue
 		}
 
 		switch {
@@ -67,6 +86,10 @@ func (l *Lexer) Tokenize() []Token {
 			l.tokens = append(l.tokens, Token{Type: "MINUS", Value: "-"})
 			l.advance()
 		case l.current() == '*':
+			if l.pos+1 < len(l.input) && l.input[l.pos+1] == '/' {
+				l.pos += 2 // skipping */
+				continue
+			}
 			l.tokens = append(l.tokens, Token{Type: "MULTIPLY", Value: "*"})
 			l.advance()
 		case l.current() == '/':
@@ -78,7 +101,6 @@ func (l *Lexer) Tokenize() []Token {
 		case l.current() == ')':
 			l.tokens = append(l.tokens, Token{Type: "RPAREN", Value: ")"})
 			l.advance()
-		default:
 		case l.current() == '>':
 			if l.pos+1 < len(l.input) && l.input[l.pos+1] == '=' {
 				l.tokens = append(l.tokens, Token{Type: "OPERATOR", Value: ">="})
@@ -97,16 +119,8 @@ func (l *Lexer) Tokenize() []Token {
 				l.tokens = append(l.tokens, Token{Type: "OPERATOR", Value: "<"})
 				l.advance()
 			}
-		case l.current() == '¬':
-			if l.pos+1 < len(l.input) && l.input[l.pos+1] == '=' {
-				l.tokens = append(l.tokens, Token{Type: "OPERATOR", Value: "!="})
-				l.advance()
-				l.advance()
-			} else {
-				l.tokens = append(l.tokens, Token{Type: "OPERATOR", Value: "!"})
-				l.advance()
-			}
-			// skipping unknown
+		default:
+			// skipping all unknown characters
 			l.advance()
 		}
 	}
@@ -154,6 +168,8 @@ func (l *Lexer) tokenizeIdentifier() {
 		tokenType = "THEN"
 	case "ELSE":
 		tokenType = "ELSE"
+	case "CALL":
+		tokenType = "CALL"
 	}
 
 	l.tokens = append(l.tokens, Token{Type: tokenType, Value: identifier})
